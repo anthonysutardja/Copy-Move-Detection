@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/tree_copy.png';
+IMAGE_PATH = './images/copy.jpg';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
 DESCRIPTOR_BOX = 1;
@@ -15,7 +15,8 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 
 % Options
 ENABLE_ANMS = true;  % adaptive non-maximal supression
-ENABLE_RANSAC = true; % RANSAC to find transformation estimatino
+ENABLE_RANSAC = true; % RANSAC to find transformation estimation
+ADD_ORIENTATION = true;
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -32,7 +33,7 @@ figure(1), imagesc(rgb2gray(im)); colormap(gray);
 hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
 
 if ENABLE_ANMS
-    interest_points = anms(interest_points, 5000, 0.9);
+    interest_points = anms(interest_points, 2000, 0.9);
 
     % Show ANMS interest points
     figure(2), imagesc(rgb2gray(im)); colormap(gray);
