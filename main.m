@@ -4,7 +4,8 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/cattle_copy.png';
+IMAGE_PATH = './images/tree_copy.png';
+MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
 DESCRIPTOR_BOX = 1;
@@ -23,6 +24,9 @@ DESCRIPTOR = DESCRIPTOR_BOX;
 
 % Load image
 im = im2single(imread(IMAGE_PATH));
+
+% Load mask
+mask = im2single(imread(MASK_PATH));
 
 %% Get interesting points
 disp('Finding harris corners..');
@@ -58,7 +62,8 @@ elseif DESCRIPTOR == DESCRIPTOR_MOPS
     disp('Extracting MOPS descriptors..');
 elseif DESCRIPTOR == DESCRIPTOR_SIFT
     disp('Extracting SIFT descriptors..');
- elseif DESCRIPTOR == DESCRIPTOR_HOG
+    descriptors = sift_keypoint_descriptor(im, interest_points);
+elseif DESCRIPTOR == DESCRIPTOR_HOG
     disp('Extracting HOG descriptors..');
 end
 
@@ -82,3 +87,10 @@ end
 
 %% Plot matches
 plot_matches(im, matches);
+
+%% Evaluate Metrics
+disp('Metrics...');
+[num_points, frac_points, dist] = metrics(mask, matches);
+disp(num_points);
+disp(frac_points);
+disp(dist);
