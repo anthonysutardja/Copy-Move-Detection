@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/tree_copy.png';
+IMAGE_PATH = './images/cattle_copy.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
 DESCRIPTOR_BOX = 1;
@@ -50,9 +50,9 @@ end
 if DESCRIPTOR == DESCRIPTOR_BOX
     disp('Extracting box descriptors..');
     if ADD_ORIENTATION
-        descriptors = box_descriptor(im, interest_points, 8, 5);
-    else
         descriptors = box_descriptor_rotate(im, interest_points, 8, 5);
+    else
+        descriptors = box_descriptor(im, interest_points, 8, 5);
     end
 elseif DESCRIPTOR == DESCRIPTOR_MOPS
     disp('Extracting MOPS descriptors..');
