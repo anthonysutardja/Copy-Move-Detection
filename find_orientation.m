@@ -1,4 +1,4 @@
-function [ theta ] = find_orientation(point, blur_im)
+function [ theta, magnitude ] = find_orientation(point, blur_im)
 %FIND_ORIENTATION Summary of this function goes here
 %   Detailed explanation goes here
 %%
@@ -8,8 +8,8 @@ function [ theta ] = find_orientation(point, blur_im)
     % a gaussian of 1.5 from key point
     % 3) get the largest magnitude angle
     x = point(1);  y = point(2);
-    WINDOW_SIZE = 20;
-    weights = fspecial('gaussian', WINDOW_SIZE * 2 + 1, 1.7 * 5);
+    WINDOW_SIZE = 15;
+    weights = fspecial('gaussian', WINDOW_SIZE * 2 + 1, 1.5 * 5);
     
     bins = {[],[],[],[],[],[],[],[],[],[]};
     angle_range = 0:2 * pi / 10:2*pi;
@@ -44,11 +44,12 @@ function [ theta ] = find_orientation(point, blur_im)
     [max_weight, max_idx] = max(values);
     
     % Calculate theta by weighting
-    max_bin = bins{max_idx};
+    max_bin = bins{max_idx}
     total_theta = 0.0;
     for idx=1:size(max_bin, 1)
         theta = max_bin(idx, 1); w = max_bin(idx, 2);
         total_theta = total_theta + theta * w;
     end
     theta = total_theta / max_weight;
+    magnitude = max_weight / size(max_bin, 1);
 end
