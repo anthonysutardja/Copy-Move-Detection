@@ -36,7 +36,11 @@ for i = 1:n
     end
 end
 
-avg_dist = dist/num_points^2;
+if num_points > 0
+    avg_dist = dist/num_points^2;
+else
+    avg_dist = 0
+end
 
 end
 
