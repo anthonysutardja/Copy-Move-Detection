@@ -44,7 +44,7 @@ function [ theta, magnitude ] = find_orientation(point, blur_im)
     [max_weight, max_idx] = max(values);
     
     % Calculate theta by weighting
-    max_bin = bins{max_idx}
+    max_bin = bins{max_idx};
     total_theta = 0.0;
     for idx=1:size(max_bin, 1)
         theta = max_bin(idx, 1); w = max_bin(idx, 2);
