@@ -4,8 +4,8 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/statue_copy.png';
-MASK_PATH = './images/statue_alpha.png';
+IMAGE_PATH = './images/tree_copy.png';
+MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
 DESCRIPTOR_BOX = 1;
@@ -16,8 +16,8 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 
 % Options
 ENABLE_ANMS = true;  % adaptive non-maximal supression
-ENABLE_RANSAC = false; % RANSAC to find transformation estimation
-ADD_ORIENTATION = false;
+ENABLE_RANSAC = true; % RANSAC to find transformation estimation
+ADD_ORIENTATION = true;
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
