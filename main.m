@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/anthony_double_rotate.jpg';
+IMAGE_PATH = './images/knight_moves_copy.png';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -80,7 +80,7 @@ end
 %% Matching
 disp('Matching points..');
 % Automatically use nearest neighbor outlier rejection
-matches = nn_outlier_rejection(descriptors, descriptors, 0.40);
+matches = nn_outlier_rejection(descriptors, descriptors, 0.4);
 matches = filter_small_matches(matches, 4.5);
 %% Filtering the matches
 % This could be by matches that conform to transformation estimation or
