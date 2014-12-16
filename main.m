@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/anthony_rotate.jpg';
+IMAGE_PATH = './images/anthony_double_rotate.jpg';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -15,9 +15,10 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 
 
 % Options
-ENABLE_ANMS = true;  % adaptive non-maximal supression
-ENABLE_RANSAC = true; % RANSAC to find transformation estimation
-ADD_ORIENTATION = true;
+ENABLE_ANMS = true;       % Adaptive non-maximal supression
+ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
+LOOK_FOR_MULTIPLE = true; % Look for multiple transformations in RANSAC 
+ADD_ORIENTATION = true;   % Rotation invariance
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -37,7 +38,7 @@ figure(1), imagesc(rgb2gray(im)); colormap(gray);
 hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
 
 if ENABLE_ANMS
-    interest_points = anms(interest_points, 2000, 0.9);
+    interest_points = anms(interest_points, 2500, 0.9);
 
     % Show ANMS interest points
     figure(2), imagesc(rgb2gray(im)); colormap(gray);
@@ -80,14 +81,18 @@ end
 disp('Matching points..');
 % Automatically use nearest neighbor outlier rejection
 matches = nn_outlier_rejection(descriptors, descriptors, 0.40);
-
+matches = filter_small_matches(matches, 4.5);
 %% Filtering the matches
 % This could be by matches that conform to transformation estimation or
 % measuring vector magnitudes and directions.
 
 % (Optional) Run ransac here or something to filter matches
 if ENABLE_RANSAC
-    matches = ransac(matches, 20000, 75);
+    if ~LOOK_FOR_MULTIPLE
+        matches = ransac(matches, 50000, 75);
+    else
+        matches = ransac_multi(matches, 50000, 75);
+    end
 end
 
 %% Plot matches
