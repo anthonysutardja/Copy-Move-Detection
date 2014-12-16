@@ -87,7 +87,7 @@ matches = nn_outlier_rejection(descriptors, descriptors, 0.40);
 
 % (Optional) Run ransac here or something to filter matches
 if ENABLE_RANSAC
-    matches = ransac(matches, 10000, 75);
+    matches = ransac(matches, 20000, 75);
 end
 
 %% Plot matches
