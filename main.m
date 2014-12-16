@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/tree_copy.png';
+IMAGE_PATH = './images/anthony_rotate.jpg';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -26,7 +26,7 @@ DESCRIPTOR = DESCRIPTOR_BOX;
 im = im2single(imread(IMAGE_PATH));
 
 % Load mask
-mask = im2single(imread(MASK_PATH));
+% mask = im2single(imread(MASK_PATH));
 
 %% Get interesting points
 disp('Finding harris corners..');
@@ -95,7 +95,7 @@ plot_matches(im, matches);
 
 %% Evaluate Metrics
 disp('Metrics...');
-[num_points, frac_points, dist] = metrics(mask, matches);
-disp(num_points);
-disp(frac_points);
-disp(dist);
+% [num_points, frac_points, dist] = metrics(mask, matches);
+% disp(num_points);
+% disp(frac_points);
+% disp(dist);
