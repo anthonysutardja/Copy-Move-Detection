@@ -7,7 +7,7 @@ function output = box_descriptor(im, points, descriptor_size, descriptor_resolut
     % TODO: use color?
     
     %% Resample
-    sample_size = descriptor_size * descriptor_resolution;
+    sample_size = descriptor_size * descriptor_resolution / 2;
     % sample each point for a 8x8 (really 40 x 40)
     A = []; points_usable = [];
     p = 1;

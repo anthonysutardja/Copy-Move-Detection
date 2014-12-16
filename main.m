@@ -17,7 +17,7 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 % Options
 ENABLE_ANMS = true;  % adaptive non-maximal supression
 ENABLE_RANSAC = true; % RANSAC to find transformation estimation
-ADD_ORIENTATION = false;
+ADD_ORIENTATION = true;
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -42,6 +42,11 @@ if ENABLE_ANMS
     % Show ANMS interest points
     figure(2), imagesc(rgb2gray(im)); colormap(gray);
     hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
+end
+
+% Auto rotate
+if ADD_ORIENTATION
+    interest_points = find_orientations(interest_points, im, 40);
 end
 
 %% Find descriptors
