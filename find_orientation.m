@@ -17,9 +17,9 @@ function [ theta, magnitude ] = find_orientation(point, blur_im)
     for b=(-WINDOW_SIZE):(WINDOW_SIZE)
         for a=(-WINDOW_SIZE):(WINDOW_SIZE)
             i = y + a;  j = x + b;
-            if is_in_im(i, j, size(blur_im, 1), size(blur_im, 2))
+            if is_in_im(i-1, j-1, size(blur_im, 1), size(blur_im, 2)) && is_in_im(i+1, j+1, size(blur_im, 1), size(blur_im, 2))
                 % Find magnitude
-                m = sqrt((blur_im(i+1, j) + blur_im(i-1, j)) ^ 2 + (blur_im(i, j+1) + blur_im(i, j-1)) ^ 2);
+                m = sqrt((blur_im(i+1, j) - blur_im(i-1, j)) ^ 2 + (blur_im(i, j+1) - blur_im(i, j-1)) ^ 2);
                 % Find orientation
                 theta = atan2(blur_im(i+1, j) - blur_im(i-1, j), blur_im(i, j+1) - blur_im(i, j-1));
                 % Get weight

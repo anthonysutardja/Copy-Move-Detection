@@ -17,7 +17,7 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 % Options
 ENABLE_ANMS = true;  % adaptive non-maximal supression
 ENABLE_RANSAC = true; % RANSAC to find transformation estimation
-ADD_ORIENTATION = true;
+ADD_ORIENTATION = false;
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
