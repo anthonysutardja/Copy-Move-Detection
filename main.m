@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/knight_moves_copy.png';
+IMAGE_PATH = './images/anthony_double_rotate.jpg';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -38,12 +38,15 @@ figure(1), imagesc(rgb2gray(im)); colormap(gray);
 hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
 
 if ENABLE_ANMS
+    disp('Filtering by ANMS..');
     interest_points = anms(interest_points, 2500, 0.9);
-
-    % Show ANMS interest points
-    figure(2), imagesc(rgb2gray(im)); colormap(gray);
-    hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
+else
+    disp('Filtering by highest corners..');
+    interest_points = highest_corners(interest_points, 2500);
 end
+% Show filtered interest points
+figure(2), imagesc(rgb2gray(im)); colormap(gray);
+hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
 
 % Auto rotate
 if ADD_ORIENTATION
