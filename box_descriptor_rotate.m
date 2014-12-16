@@ -19,7 +19,6 @@ function output = box_descriptor_rotate(im, points, descriptor_size, descriptor_
         box = get_rotated_image(y, x, theta, g_im(:,:,2), sample_size);
         box = downsample(box', descriptor_resolution);
         box = downsample(box', descriptor_resolution);
-        imwrite(box, strcat(strcat('dump/', num2str(p)), '.jpg'));
         normal_box = (box - mean(box(:))) / std(box(:));
         A(p, :) = normal_box(:);
         points_usable(p, :) = [y, x];
