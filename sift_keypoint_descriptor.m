@@ -1,15 +1,21 @@
 function [descriptor] = sift_keypoint_descriptor(im, points)
 
 % Initialize
-[height, width] = size(im);
+[height, width, ~] = size(im);
 [n, ~] = size(points);
 descriptors = zeros(n, 128);
-orientations = zeros(height, width, 2);
-% for i = 1:width
-%     for j = 1:height
-%         orientations(j,i) = find_orientation([i,j], im);
-%     end
-% end
+all_points = zeros(height*width, 2);
+mapping = zeros(height, width);
+
+e = 1;
+for i = 1:width
+    for j = 1:height
+        all_points(e,:) = [j,i,0];
+        mapping(j,i) = e;
+        e=e+1;
+    end
+end
+orientations = find_orientations(all_points, im, 15);
 
 for p = 1:n
     % Get the point of interest
@@ -28,8 +34,7 @@ for p = 1:n
             bins = zeros(8,1);
             for k = i:i+3
                 for l = j:j+3
-                    theta = orientations(l,k,1);
-                    magnitude = orientations(l,k,2);
+                    [~, ~, theta, magnitude] = orientations(mapping(j,i));
                     bin_num = int8(theta/45)+1; % Find which bin
                     weight = weights(k-x+9,l-y+9); % Find the weight
                     % Update that bin
