@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/cattle_copy.jpg';
+IMAGE_PATH = './images/kore_copy.png';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -19,7 +19,7 @@ ENABLE_ANMS = true;       % Adaptive non-maximal supression
 ENABLE_HIGH_POINTS = false;
 ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
 LOOK_FOR_MULTIPLE = true; % Look for multiple transformations in RANSAC 
-ADD_ORIENTATION = false;   % Rotation invariance
+ADD_ORIENTATION = true;   % Rotation invariance
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -40,7 +40,7 @@ hold on; plot(interest_points_original(:,2),interest_points_original(:,1),'r.');
 
 if ENABLE_ANMS
     disp('Filtering by ANMS..');
-    interest_points = anms(interest_points_original, 2500, 0.9); % before was 0.9
+    interest_points = anms(interest_points_original, 3000, 0.9); % before was 0.9
 elseif ENABLE_HIGH_POINTS
     disp('Filtering by highest corners..');
     interest_points = highest_corners(interest_points_original, 8000);

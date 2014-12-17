@@ -2,7 +2,7 @@ function output = ransac_multi(matches, iters, error_threshold)
 %RANSAC Summary of this function goes here
 %   Detailed explanation goes here
     corresponding_points1 = matches.source; corresponding_points2 = matches.target;
-    best_inlier_sets = {[], [], [], [], []};
+    best_inlier_sets = {[], [], [], [], [], []};
     o = ones(size(corresponding_points1, 1), 1);
     for i=1:iters
         % Select 4 random points
@@ -31,6 +31,9 @@ function output = ransac_multi(matches, iters, error_threshold)
             if numel(inlier_indices) > numel(i_set) && numel(inlier_indices) > 3
                 % Replace if we found a better set of inliers
                 best_inlier_sets{idx} = inlier_indices;
+                for oidx=fliplr(idx:(size(best_inlier_sets, 2)-1))
+                    best_inlier_sets{oidx + 1} = best_inlier_sets{idx};
+                end
                 break;
             elseif numel(inlier_indices) == numel(i_set)
                 break;
