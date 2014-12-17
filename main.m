@@ -89,7 +89,7 @@ end
 %% Matching
 disp('Matching points..');
 % Automatically use nearest neighbor outlier rejection
-matches = nn_outlier_rejection(descriptors, descriptors, 0.4);
+matches = nn_outlier_rejection(descriptors, descriptors, 0.5);
 matches = filter_small_matches(matches, 4.5);
 %% Filtering the matches
 % This could be by matches that conform to transformation estimation or
@@ -100,7 +100,7 @@ if ENABLE_RANSAC
     if ~LOOK_FOR_MULTIPLE
         matches = ransac(matches, 80000, 75);
     else
-        matches = ransac_multi(matches, 50000, 75);
+        matches = ransac_multi(matches, 80000, 75);
     end
 end
 
