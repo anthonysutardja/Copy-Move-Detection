@@ -6,7 +6,7 @@ function [ results ] = find_orientations( query_points, im , window_size)
     disp('Finding orientations..');
     % Note: Should try window size of 15 first
     thetas = [];
-    L = gaussian_stacks(im, 2, 4.0);
+    L = gaussian_stacks(im2double(rgb2gray(im)), 2, 4.0);
     h = size(L, 1);  w = size(L, 2);
     W = fspecial('gaussian', window_size * 2 + 1, 1.5 * 5);
     angle_range = 0:2*pi/10:2*pi;
@@ -19,7 +19,8 @@ function [ results ] = find_orientations( query_points, im , window_size)
     results = [];
     additional_orientations_added = 0;
     for idx=1:size(query_points, 1)
-        y = query_points(idx, 1); x = query_points(idx, 2);
+        y = query_points(idx, 1);
+        x = query_points(idx, 2);
         % Check if point is within our magnitude and angle images
         if is_in_im(y - window_size - 1, x - window_size - 1, h-2, w-2) && is_in_im(y + window_size - 1, x + window_size - 1, h-2, w-2) 
             weights = W .* M(y - 1 - window_size: y - 1 + window_size, x - 1 - window_size: x - 1 + window_size);

@@ -1,4 +1,4 @@
-function [descriptors] = sift_descriptor(im, interest_points)
+function [descriptors] = sift_descriptor(im)
 
 % Change to gray
 im = rgb2gray(im);
@@ -102,7 +102,7 @@ for i = 1:octaves
 end
 
 [row, col] = find(extrema);
-descriptors = [row+1, col+1];
+descriptors = [row+1, col+1, rand(size(row, 1), 1)];
 
 end
 

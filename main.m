@@ -4,7 +4,7 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/anthony_double_rotate.jpg';
+IMAGE_PATH = './images/cattle_copy.jpg';
 MASK_PATH = './images/tree_alpha.png';
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
@@ -16,9 +16,10 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 
 % Options
 ENABLE_ANMS = true;       % Adaptive non-maximal supression
+ENABLE_HIGH_POINTS = false;
 ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
 LOOK_FOR_MULTIPLE = true; % Look for multiple transformations in RANSAC 
-ADD_ORIENTATION = true;   % Rotation invariance
+ADD_ORIENTATION = false;   % Rotation invariance
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -31,23 +32,28 @@ im = im2single(imread(IMAGE_PATH));
 
 %% Get interesting points
 disp('Finding harris corners..');
-interest_points = harris(im);
+interest_points_original = harris(im);
 
 % Show harris interest points
 figure(1), imagesc(rgb2gray(im)); colormap(gray);
-hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
+hold on; plot(interest_points_original(:,2),interest_points_original(:,1),'r.'); hold off;
 
 if ENABLE_ANMS
     disp('Filtering by ANMS..');
-    interest_points = anms(interest_points, 2500, 0.9);
-else
+    interest_points = anms(interest_points_original, 2500, 0.9); % before was 0.9
+elseif ENABLE_HIGH_POINTS
     disp('Filtering by highest corners..');
-    interest_points = highest_corners(interest_points, 2500);
+    interest_points = highest_corners(interest_points_original, 8000);
+else
+    interest_points = interest_points_original;
 end
-% Show filtered interest points
-figure(2), imagesc(rgb2gray(im)); colormap(gray);
-hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
 
+% interest_points = cat(1, interest_points, highest_corners(interest_points_original, 500));
+
+% Show filtered interest points
+figure(3), imagesc(rgb2gray(im)); colormap(gray);
+hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
+%%
 % Auto rotate
 if ADD_ORIENTATION
     interest_points = find_orientations(interest_points, im, 40);
@@ -92,7 +98,7 @@ matches = filter_small_matches(matches, 4.5);
 % (Optional) Run ransac here or something to filter matches
 if ENABLE_RANSAC
     if ~LOOK_FOR_MULTIPLE
-        matches = ransac(matches, 50000, 75);
+        matches = ransac(matches, 80000, 75);
     else
         matches = ransac_multi(matches, 50000, 75);
     end

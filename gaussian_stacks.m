@@ -11,13 +11,13 @@ im = padarray(im, [pad_size, pad_size], 'symmetric');
 
 % Gaussian
 G = zeros(height, width, N);
-for i=0:N-1
+for b=0:N-1
     % Filter it!
-    sigma = base_sigma * (i+1);
+    sigma = base_sigma * (b+1);
     g_im = imfilter(im, fspecial('gaussian', ceil(sigma * 4), sigma));
     
     % Crop it back down
-    G(:,:,i+1) = g_im(pad_size + 1: pad_size + height, pad_size + 1:pad_size + width);
+    G(:,:,b+1) = g_im(pad_size + 1: pad_size + height, pad_size + 1:pad_size + width);
 end
 
 end

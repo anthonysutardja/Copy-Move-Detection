@@ -28,7 +28,7 @@ function output = ransac_multi(matches, iters, error_threshold)
         idx = 1;
         for inlier_set=best_inlier_sets
             i_set = inlier_set{1};
-            if numel(inlier_indices) > numel(i_set) && numel(inlier_indices) > 5
+            if numel(inlier_indices) > numel(i_set) && numel(inlier_indices) > 3
                 % Replace if we found a better set of inliers
                 best_inlier_sets{idx} = inlier_indices;
                 break;
