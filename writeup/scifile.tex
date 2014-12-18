@@ -110,7 +110,7 @@
 % Place your abstract within the special {sciabstract} environment.
 
 \begin{sciabstract}
-Abstract: ``Copy-move" forgery, in which a portion of the image is resampled to another region, is a common photo manipulation technique used to alter picture content. Previous work in detecting this type of forgery has shown inaccurate results and inefficient processing time. We propose a combination of methods that result in fast copy-move detection performance. Our method finds invariant features within the image and looks for matches using a modified version of nearest neighbors on oriented patches of the images. Potential corresponding matches are filtered by whether they fit into a set of transformations given by RANSAC.
+Abstract: ``Copy-move" forgery, in which a portion of the image is resampled to another region, is a common photo manipulation technique used to alter picture content. Previous work in detecting this type of forgery has shown inaccurate results and inefficient processing time. We propose a combination of methods that results in fast and more accurate copy-move detection performance. Our method finds invariant features within the image and looks for matches using a modified version of nearest neighbors on oriented patches of the images. Potential corresponding matches are filtered by whether they fit into a set of transformations given by RANSAC.
 \end{sciabstract}
 
 % In setting up this template for *Science* papers, we've used both
@@ -158,16 +158,18 @@ Our method draws inspiration from a technique for stitching photos into into a p
 \includegraphics[width=1.0\linewidth]{./gfx/cm_pipeline.png}
 
 \subsection*{Interest points}
-Derp.
+To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [?]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or gradient-based sorting. In ANMS, ... . In gradient-based sorting, we take the Harris corners that have the highest gradient, regardless of their distance to other points. 
 
 \subsection*{Descriptors}
-Derp.
+We experimented with two different descriptors, the box descriptor and SIFT (scale invariant feature transform). For the box descriptor, ...
+
+For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the 16 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize. 
 
 \subsection*{Matching}
-Derp.
+For matching, 
 
 \subsection*{Estimated Transformations}
-Derp.
+We use RANSAC.
 
 \section*{Results}
 

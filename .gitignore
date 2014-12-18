@@ -1,2 +1,4 @@
 *.m~
 .texpadtmp
+*.aux
+*.log
