@@ -124,7 +124,7 @@ Abstract: ``Copy-move" forgery, in which a portion of the image is resampled to 
 % suppress numbering.
 
 \section*{Introduction}
-Photo manipulation tools have been becoming more powerful and accessible to use than ever before. Almost anyone can open up their favorite photo manipulation tool, like Adobe PhotoShop, and change the image to enhance and alter it. As these techniques get more and more advanced, the distinction between what’s real and what’s been crafted is becoming harder to distinguish, which means that the human eye has difficulty interpreting which images are authentic.
+Photo manipulation tools have been becoming more powerful and accessible to use than ever before. Almost anyone can open up their favorite photo manipulation tool, like Adobe PhotoShop, and change the image to enhance and alter it. As these techniques get more and more advanced, the distinction between what is real and what is been crafted is becoming harder to distinguish, which means that the human eye has difficulty interpreting which images are authentic.
 
 In this paper, we examine the detection of a particular type of image forgery known as copy-move forgery. Copy-move forgery is when portions of the image are resampled to another part of the image with the intent to change the photo's meaning and context. An example of such an attack is replacing a portion of the image with more buildings as seen in Figure 1 [3].
 
@@ -173,29 +173,24 @@ We use RANSAC.
 
 \section*{Results}
 
-Our results...
+We benchmark our results on two metrics: number of points that were correctly matched, and time in seconds for completion. Additionally, we evaluate our results empirically and provide some examples that worked well and others that worked less well. Our numeric metrics are displayed in Table 1. 
+
+\begin{table}[t]
+\caption{Evaluation Metrics}
+\label{sparsesvd}
+\begin{center}
+\begin{tabular}{l|llllll}
+\multicolumn{1}{l}{} & \multicolumn{1}{l}{\bf Box, ANMS} & \multicolumn{1}{l}{\bf Box, High} & \multicolumn{1}{l}{\bf BR, ANMS} & \multicolumn{1}{l}{\bf BR, High} & \multicolumn{1}{l}{\bf SIFT, ANMS} & \multicolumn{1}{l}{\bf SIFT, High}
+\\ \hline \\
+{\bf \# Points} & 0 & 0 & 0 & 0 & 0 & 0 \\
+{\bf Time (s)} & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{tabular}
+\end{center}
+\end{table}
 
 \section*{Discussion and Future Work}
 
 Discuss here...
-
-%\begin{table}[t]
-%\caption{SAMPLE: Topics Derived From Sparse SVD, n = 7}
-%\label{sparsesvd}
-%\begin{center}
-%\begin{tabular}{lllllll}
-%\multicolumn{1}{l}{\bf Topic 1} & \multicolumn{1}{l}{\bf Topic 2} & \multicolumn{1}{l}{\bf Topic 3} & \multicolumn{1}{l}{\bf Topic 4} & \multicolumn{1}{l}{\bf Topic 5} & \multicolumn{1}{l}{\bf Topic 6} & \multicolumn{1}{l}{\bf Topic 7}
-%\\ \hline \\
-%Silicon & Input & Polypeptides & Spindle & Ester & Freely & Data \\
-%Metal & Frequency & Tissues & Lens & Fibers & Branching & System \\
-%Formed & Valve & Fibers & Motor & Keto & Foliage & Fiber \\
-%Electrode & Amplifier & Methods & Gas & Acid & Flowers & Information \\
-%Surface & Power & Compounds & Optical & Valve & Yellow & Network \\
-%Semiconductor & Current & Products & Drive & Tissue & Plant & Signal \\
-%Substrate & Circuit & Ink & Magnetic & Crosslinked & Habit & Optical \\
-%\end{tabular}
-%\end{center}
-%\end{table}
 
 %*********************SAMPLE FIGURE*************************
 %\begin{figure}[h]
