@@ -233,7 +233,7 @@ To improve the speed of the subsequent step, we also do an additional step of fi
 \subsection*{Estimated Transformations}
 Matching provides us with many correspondence points that have similar features, and we now use RANSAC to find the best set of matches that correspond to a copy move. RANSAC is an iterative method that repeatedly selects 4 points and computes the sum of squared differences (SSD) of each set of corresponding points [?]. Then, it keeps the set of inliers, where the SSD is less than some epsilon values. We run this for 8000 iterations. 
 
-However, RANSAC has a single inlier set and therefore does not scale well to multiple translations. We derive a new method, multi-RANSAC (mRANSAC) that solves this issue. 
+However, RANSAC has a single inlier set and therefore does not scale well to multiple translations. We derive a new method, multi-RANSAC (mRANSAC) that solves this issue. Multi-RANSAC performs exactly the same as RANSAC, except that it saves the top $K$ inlier sets (we used $K = 6$). This essentially attempts to capture multiple transformations, which enables us to identify more than one specific instance of copy-move within an image. In this modified vresion of RANSAC, we also only kept inlier sets that contained a mininum number of points that was set by a threshold.
 
 \section*{Results}
 
@@ -254,11 +254,9 @@ We benchmark our results on two metrics: number of points that were correctly ma
 
 \section*{Discussion and Future Work}
 
-Discuss...
-
 One area of future work include detecting scaled copy move detection. Currently SIFT is not sufficient for detecting copy move, and we propose a method to solve this problem: repeatedly downsize an image and run feature matching. However, this tends to be less common in copy move examples, as objects can appear out of place with too much scaling and are therefore more easily detected by the human eye. Another, albeit much more difficult, problem is to detect points that were warped with some homography. One potential solution to solving these problems is to instead form interest points in the frequency domain, a method that we hope will lead to uncover more underlying structure of an image and portions of the image. 
 
-Another area of future work is to formalize mRANSAC and make it more robust to different images and arbitrary number clusters. We propose using some variant of the Hierarchical Dirichlet Process (HDP) to automatically find the clusters and be able to integrate it into the RANSAC algorithm. Our currently methodology is able to find points of the copy move, although it often just finds a portion of the copy move. The criterion of the inlier set could be experimented with in mRANSAC to be able to detect a wider spread of the copy move. 
+Another area of future work is to formalize mRANSAC and make it more robust to different images and arbitrary number clusters (it's currently only able to capture a pre-defined number of transformations). We propose using some variant of the Hierarchical Dirichlet Process (HDP) to automatically find the clusters and be able to integrate it into the RANSAC algorithm. Our currently methodology is able to find points of the copy move, although it often just finds a portion of the copy move. The criterion of the inlier set could be experimented with in mRANSAC to be able to detect a wider spread of the copy move.
 
 Last, we propose two experiments for future work using our current framework to improve accuracy. The first is finding the optimal window size for each of the descriptors and developing a method of determining what window size to on which images. It is unclear whether using less points will increase or decrease the accuracy of the matching. Increase points will allow for more matches, but at the same time it will add more "noise". A formal assessment of this can determine the optimal number of points used. 
 
