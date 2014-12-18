@@ -30,6 +30,9 @@ for p = 1:n
     weights = fspecial('gaussian', 16, 8);
     e = 0;
     descriptor = zeros(128, 1);
+    ip_theta = dir(y,x);
+    ip_mag = mag(y,x);
+    ip_bin_num = mod(int8(ip_theta/45),8)+1;
 
     for i = x-8:4:x+7
         for j = y-8:4:y+7
@@ -44,12 +47,19 @@ for p = 1:n
                     bins(bin_num) = bins(bin_num) + magnitude*weight;
                 end
             end
+            bins(ip_bin_num) = bins(ip_bin_num)-ip_mag;
+            if bins(ip_bin_num) < 0
+                bins(ip_bin_num) = 0;
+            end
             descriptor(e*8+1:(e+1)*8) = bins;
             e = e+1;
         end
     end
 
-    descriptors(p,:) = descriptor/norm(descriptor);
+    threshold = 0.2;
+    descriptor = descriptor/norm(descriptor);
+    descriptor(descriptor > threshold) = 0.2;
+    descriptors(p,:) = descriptor/norm(descriptor); 
 end
 
 output = struct('descriptors', descriptors, 'points', points);
