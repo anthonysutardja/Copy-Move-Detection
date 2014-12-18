@@ -6,7 +6,8 @@
 
 IMG_NAME = 'tree';
 
-IMAGE_PATH = strcat(strcat('./p_images/', IMG_NAME), '/modified.png');
+% IMAGE_PATH = strcat(strcat('./p_images/', IMG_NAME), '/modified.png');
+IMAGE_PATH = './images/threehundred_copy.png';
 MASK_PATH = strcat(strcat('./p_images/', IMG_NAME), '/mask.png');
 
 start_time = cputime;
@@ -113,7 +114,7 @@ plot_matches(im, matches);
 
 %% Evaluate Metrics
 disp('Metrics...');
-[num_points, frac_points] = metrics(mask, matches);
-disp(strcat('Matched points: ', num2str(num_points)));
-disp(strcat('Fraction of matched points: ', num2str(frac_points)));
-disp(strcat('Total time: ', num2str(cputime - start_time)));
+% [num_points, frac_points] = metrics(mask, matches);
+% disp(strcat('Matched points: ', num2str(num_points)));
+% disp(strcat('Fraction of matched points: ', num2str(frac_points)));
+% disp(strcat('Total time: ', num2str(cputime - start_time)));
