@@ -126,9 +126,9 @@ Abstract: ``Copy-move" forgery, in which a portion of the image is resampled to 
 \section*{Introduction}
 Photo manipulation tools have been becoming more powerful and accessible to use than ever before. Almost anyone can open up their favorite photo manipulation tool, like Adobe PhotoShop, and change the image to enhance and alter it. As these techniques get more and more advanced, the distinction between what is real and what is been crafted is becoming harder to distinguish, which means that the human eye has difficulty interpreting which images are authentic.
 
-In this paper, we examine the detection of a particular type of image forgery known as copy-move forgery. Copy-move forgery is when portions of the image are resampled to another part of the image with the intent to change the photo's meaning and context. An example of such an attack is replacing a portion of the image with more buildings as seen in Figure 1 [3].
+In this paper, we examine the detection of a particular type of image forgery known as copy-move forgery. Copy-move forgery is when portions of the image are resampled to another part of the image with the intent to change the photo's meaning and context. An example of such an attack is replacing a portion of the image with more buildings as seen in Figure 1 [2].
 
-There are many existing methods that attempt to detect copy-move forgery. However, some of these methods have large processing times of up to 2600 seconds (around 45 minutes) [1] and other methods do not achieve reliable detections [2].
+There are many existing methods that attempt to detect copy-move forgery. However, some of these methods have large processing times of up to 2600 seconds (around 45 minutes) [1] and other methods do not achieve reliable detections [7].
 
 We explore a combination of methods that yield reliable copy-move detections in a reasonable amount of time.
 
@@ -153,14 +153,14 @@ We explore a combination of methods that yield reliable copy-move detections in 
 
 
 \section*{Methodology}
-Our method draws inspiration from a technique for stitching photos into into a panorama [4]. We follow a large portion of the panorama stitching pipeline in that we detect interest points, create oriented descriptors around the interest points, find potential matches, and estimate the transformation from the source to destination. Instead of applying this method to image stitching, we use this technique for identifying key features that have a strong correlation to other portions of the image. This is analogous to ``stitching" the photo in question to itself.
+Our method draws inspiration from a technique for stitching photos into into a panorama [6]. We follow a large portion of the panorama stitching pipeline in that we detect interest points, create oriented descriptors around the interest points, find potential matches, and estimate the transformation from the source to destination. Instead of applying this method to image stitching, we use this technique for identifying key features that have a strong correlation to other portions of the image. This is analogous to ``stitching" the photo in question to itself.
 
 \includegraphics[width=1.0\linewidth]{./gfx/cm_pipeline.png}
 
 \subsection*{Interest points}
-To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [?]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or corner-based sorting. 
+To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [6]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or corner-based sorting. 
 
-The reason for filtering interest points is for speed. Filtering the points for a subset is necessary to drastically decrease running time. Although using every interest point found can lead to very accurate detections, comparing every interest point is computationally expensive and leads to extremely high processing times [? Harris and SIFT paper]. Furthermore, the filtering is also helpful for reducing the number of iterations that RANSAC needs to estimate the various copy-move transformations.
+The reason for filtering interest points is for speed. Filtering the points for a subset is necessary to drastically decrease running time. Although using every interest point found can lead to very accurate detections, comparing every interest point is computationally expensive and leads to extremely high processing times [1]. Furthermore, the filtering is also helpful for reducing the number of iterations that RANSAC needs to estimate the various copy-move transformations.
 
 The two different interest point filtering methods both have significantly different use cases.
 
@@ -190,13 +190,13 @@ The two different interest point filtering methods both have significantly diffe
   \caption{Detection with ANMS}
   \label{fig:sub2}
 \end{subfigure}
-\caption{Figure 2(a) and 2(b) shows the contrast between using ANMS vs corner based sorting on small regions of manipulation; the bird has been copied and corner based sorting is able to capture more interest points for matching. Figure 2(c) and 2(d) show the difference between the locality of detection from corner-based sorting and the spread of detection form ANMS.}
+\caption{Figure 2(a) and 2(b) shows the contrast between using ANMS vs corner based sorting on small regions of manipulation; the bird has been copied and corner based sorting is able to capture more interest points for matching. Figure 2(c) and 2(d) show the difference between the locality of detection from corner-based sorting and the spread of detection from ANMS.}
 \label{fig:test}
 \end{figure}
 
 In corner-based sorting, we take the Harris corners that have the highest Harris corner value, regardless of their distance to other points. Taking the top $N$ interest points from corner-based sorting helps capture more localized details. This is especially important with images that have extremely small manipulations, since copy-move transformation estimation requires at least a few points in order to come up with an accurate transformation.
 
-In ANMS, we take Harris corners that are high in value and spread relative. This methodology is directly taken from the MOPS paper; please see the paper for more details on its implementation [? MOPS]. Using ANMS helps detection of a broader region of copy-move instances since the collection of interest points are more spread out. This is useful in capturing the full context of the copy-moved manipulation.
+In ANMS, we take Harris corners that are high in value and spread relative. This methodology is directly taken from the MOPS paper; please see the paper for more details on its implementation [6]. Using ANMS helps detection of a broader region of copy-move instances since the collection of interest points are more spread out. This is useful in capturing the full context of the copy-moved manipulation.
 
 \subsection*{Descriptors}
 We experimented with two different descriptors, the box descriptor and scale invariant feature transform (SIFT) descriptor.
@@ -226,7 +226,7 @@ In order to make our box descriptor rotationally invariant, we oriented the wind
 For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the sixteen 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize.
 
 \subsection*{Matching}
-After we have descriptors, we use the outlier rejection with nearest neighbor, heavily adapting the code from Efros et al.  Specifically, use a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [?]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 
+After we have descriptors, we use the outlier rejection with nearest neighbor, heavily adapting the code from Efros et al.  Specifically, use a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [6]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 
 
 To improve the speed of the subsequent step, we also do an additional step of filtering. We found that many points that were returned by the matching were points that were a few pixels away from each other, since the texture doesn't change too much. However, it is difficult by hand to copy move anything less than 10 pixels (or even 15-20 pixels). Therefore, we remove matches that are 3 pixels or less apart. 
 
@@ -264,7 +264,7 @@ Last, we propose two experiments for future work using our current framework to 
 
 \subsection*{Acknowledgements}
 
-We would like thank Alyosha Efros for teaching and inspiration, as well as the ideas from his panorama stitching project which greatly influenced our work. We thank James O'Brien for his initial guidance and support on this topic. We would additionally like to thank the University of Nurnberg for the dataset [?].
+We would like thank Alyosha Efros for teaching and inspiration, as well as the ideas from his panorama stitching project which greatly influenced our work. We thank James O'Brien for his initial guidance and support on this topic. We would additionally like to thank the University of Nurnberg for the dataset [2].
 
 \subsection*{References}
 
