@@ -113,7 +113,7 @@ plot_matches(im, matches);
 
 %% Evaluate Metrics
 disp('Metrics...');
-[num_points, frac_points, dist] = metrics(mask, matches);
+[num_points, frac_points] = metrics(mask, matches);
 disp(strcat('Matched points: ', num2str(num_points)));
 disp(strcat('Fraction of matched points: ', num2str(frac_points)));
 disp(strcat('Total time: ', num2str(cputime - start_time)));
