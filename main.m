@@ -4,8 +4,12 @@
 
 % By Anthony Sutardja and Kevin Tee
 
-IMAGE_PATH = './images/kore_copy.png';
-MASK_PATH = './images/tree_alpha.png';
+IMG_NAME = 'tree';
+
+IMAGE_PATH = strcat(strcat('./p_images/', IMG_NAME), '/modified.png');
+MASK_PATH = strcat(strcat('./p_images/', IMG_NAME), '/mask.png');
+
+start_time = cputime;
 
 % Descriptor options (Don't touch unless you're adding a descriptor!)
 DESCRIPTOR_BOX = 1;
@@ -18,8 +22,8 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 ENABLE_ANMS = true;       % Adaptive non-maximal supression
 ENABLE_HIGH_POINTS = false;
 ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
-LOOK_FOR_MULTIPLE = true; % Look for multiple transformations in RANSAC 
-ADD_ORIENTATION = true;   % Rotation invariance
+LOOK_FOR_MULTIPLE = false; % Look for multiple transformations in RANSAC 
+ADD_ORIENTATION = false;   % Rotation invariance
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 
@@ -28,7 +32,7 @@ DESCRIPTOR = DESCRIPTOR_BOX;
 im = im2single(imread(IMAGE_PATH));
 
 % Load mask
-% mask = im2single(imread(MASK_PATH));
+mask = im2single(imread(MASK_PATH));
 
 %% Get interesting points
 disp('Finding harris corners..');
@@ -109,7 +113,7 @@ plot_matches(im, matches);
 
 %% Evaluate Metrics
 disp('Metrics...');
-% [num_points, frac_points, dist] = metrics(mask, matches);
-% disp(num_points);
-% disp(frac_points);
-% disp(dist);
+[num_points, frac_points, dist] = metrics(mask, matches);
+disp(strcat('Matched points: ', num2str(num_points)));
+disp(strcat('Fraction of matched points: ', num2str(frac_points)));
+disp(strcat('Total time: ', num2str(cputime - start_time)));
