@@ -172,6 +172,8 @@ For SIFT, for each interest point, we take a 16x16 window around that point, spl
 \subsection*{Matching}
 After we have descriptors, we use the outlier rejection with nearest neighbor, heavily adapting the code from Efros et al.  Specifically, use a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [?]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 
 
+To improve the speed of the subsequent step, we also do an additional step of filtering. We found that many points that were returned by the matching were points that were a few pixels away from each other, since the texture doesn't change too much. However, it is difficult by hand to copy move anything less than 10 pixels (or even 15-20 pixels). Therefore, we remove matches that are 3 pixels or less apart. 
+
 \subsection*{Estimated Transformations}
 Matching provides us with many correspondence points that have similar features, and we now use RANSAC to find the best set of matches that correspond to a copy move. RANSAC is an iterative method that repeatedly selects 4 points and computes the sum of squared differences (SSD) of each set of corresponding points [?]. Then, it keeps the set of inliers, where the SSD is less than some epsilon values. We run this for 8000 iterations. 
 
@@ -196,11 +198,17 @@ We benchmark our results on two metrics: number of points that were correctly ma
 
 \section*{Discussion and Future Work}
 
-Discuss here...
+Discuss...
+
+One area of future work include detecting scaled copy move detection. Currently SIFT is not sufficient for detecting copy move, and we propose a method to solve this problem: repeatedly downsize an image and run feature matching. However, this tends to be less common in copy move examples, as objects can appear out of place with too much scaling and are therefore more easily detected by the human eye. Another, albeit much more difficult, problem is to detect points that were warped with some homography. One potential solution to solving these problems is to instead form interest points in the frequency domain, a method that we hope will lead to uncover more underlying structure of an image and portions of the image. 
+
+Another area of future work is to formalize mRANSAC and make it more robust to different images and arbitrary number clusters. We propose using some variant of the Hierarchical Dirichlet Process (HDP) to automatically find the clusters and be able to integrate it into the RANSAC algorithm. Our currently methodology is able to find points of the copy move, although it often just finds a portion of the copy move. The criterion of the inlier set could be experimented with in mRANSAC to be able to detect a wider spread of the copy move. 
+
+Last, we propose two experiments for future work using our current framework to improve accuracy. The first is finding the optimal window size for each of the descriptors and developing a method of determining what window size to on which images. It is unclear whether using less points will increase or decrease the accuracy of the matching. Increase points will allow for more matches, but at the same time it will add more "noise". A formal assessment of this can determine the optimal number of points used. 
 
 \subsection*{Acknowledgements}
 
-We would like thank Alyosha Efros for teaching and inspiration, as well as the ideas from his panorama stitching project which greatly influenced our work. We would additionally like to thank the University of Nurnberg for the dataset [?].
+We would like thank Alyosha Efros for teaching and inspiration, as well as the ideas from his panorama stitching project which greatly influenced our work. We thank James O'Brien for his initial guidance and support on this topic. We would additionally like to thank the University of Nurnberg for the dataset [?].
 
 \subsection*{References}
 
