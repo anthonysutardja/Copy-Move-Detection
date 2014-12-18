@@ -23,9 +23,9 @@ ENABLE_ANMS = false;       % Adaptive non-maximal supression
 ENABLE_HIGH_POINTS = true;
 ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
 LOOK_FOR_MULTIPLE = false; % Look for multiple transformations in RANSAC 
-ADD_ORIENTATION = true;   % Rotation invariance
+ADD_ORIENTATION = false;   % Rotation invariance
 
-DESCRIPTOR = DESCRIPTOR_BOX;
+DESCRIPTOR = DESCRIPTOR_SIFT;
 
 
 % Load image
