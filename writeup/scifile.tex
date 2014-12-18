@@ -128,7 +128,7 @@ Photo manipulation tools have been becoming more powerful and accessible to use 
 
 In this paper, we examine the detection of a particular type of image forgery known as copy-move forgery. Copy-move forgery is when portions of the image are resampled to another part of the image with the intent to change the photo's meaning and context. An example of such an attack is replacing a portion of the image with more buildings as seen in Figure 1 [3].
 
-There are many existing methods that attempt to detect copy-move forgery. However, some of these methods have large processing times of up to 2600 seconds [1] and other methods do not achieve reliable detections [2].
+There are many existing methods that attempt to detect copy-move forgery. However, some of these methods have large processing times of up to 2600 seconds (around 45 minutes) [1] and other methods do not achieve reliable detections [2].
 
 We explore a combination of methods that yield reliable copy-move detections in a reasonable amount of time.
 
@@ -158,16 +158,72 @@ Our method draws inspiration from a technique for stitching photos into into a p
 \includegraphics[width=1.0\linewidth]{./gfx/cm_pipeline.png}
 
 \subsection*{Interest points}
-To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [?]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or gradient-based sorting. In ANMS, ... . In gradient-based sorting, we take the Harris corners that have the highest gradient, regardless of their distance to other points. 
+To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [?]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or corner-based sorting. 
+
+The reason for filtering interest points is for speed. Filtering the points for a subset is necessary to drastically decrease running time. Although using every interest point found can lead to very accurate detections, comparing every interest point is computationally expensive and leads to extremely high processing times [? Harris and SIFT paper]. Furthermore, the filtering is also helpful for reducing the number of iterations that RANSAC needs to estimate the various copy-move transformations.
+
+The two different interest point filtering methods both have significantly different use cases.
+
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/ip_bird_anms.png}
+  \caption{Interest points from ANMS}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/ip_bird_high.png}
+  \caption{Interest points from corner-based sorting}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/ip_high.jpg}
+  \caption{Detection with top harris corners}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/ip_anms.jpg}
+  \caption{Detection with ANMS}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Figure 2(a) and 2(b) shows the contrast between using ANMS vs corner based sorting on small regions of manipulation; the bird has been copied and corner based sorting is able to capture more interest points for matching. Figure 2(c) and 2(d) show the difference between the locality of detection from corner-based sorting and the spread of detection form ANMS.}
+\label{fig:test}
+\end{figure}
+
+In corner-based sorting, we take the Harris corners that have the highest Harris corner value, regardless of their distance to other points. Taking the top $N$ interest points from corner-based sorting helps capture more localized details. This is especially important with images that have extremely small manipulations, since copy-move transformation estimation requires at least a few points in order to come up with an accurate transformation.
+
+In ANMS, we take Harris corners that are high in value and spread relative. This methodology is directly taken from the MOPS paper; please see the paper for more details on its implementation [? MOPS]. Using ANMS helps detection of a broader region of copy-move instances since the collection of interest points are more spread out. This is useful in capturing the full context of the copy-moved manipulation.
 
 \subsection*{Descriptors}
-We experimented with two different descriptors, the box descriptor and SIFT (scale invariant feature transform).
+We experimented with two different descriptors, the box descriptor and scale invariant feature transform (SIFT) descriptor.
 
-For the box descriptor, we first implemented a naive box descriptor that did not take orientation into account. The box descriptor is created by sampling a 40 x 40 window that is Gaussian blurred (at $\sigma = 1.0$) and then downsampled to an 8 x 8 window, which is subsequently rescaled such that the features are zero mean unit variance. This descriptor worked well in identifying strictly translational copy move instances, but was a poor descriptor for rotated copy move instances.
+For the box descriptor, we first implemented a naive box descriptor that did not take orientation into account. The box descriptor is created by sampling a 40x40 window that is Gaussian blurred (at $\sigma = 1.0$) and then downsampled to an 8 x 8 window, which is subsequently rescaled such that the features are zero mean unit variance. This descriptor worked well in identifying strictly translational copy move instances, but was a poor descriptor for rotated copy-move instances.
 
-In order to make our box descriptor rotationally invariant, we oriented the images such that the dominant gradient direction was aligend with the axis of the 40 x 40 window. The dominant gradient was found by bucketing each pixel's orientation into ten 36 degree buckets, which was weighted by the gaussian coefficient based on each pixel's distance to the central interest point and the magnitude of each pixel's gradient. The weighted average of all the point orientations that were a part of the dominant gradient direction was used to then calculate the overall weighted orientation of the descriptor.
+In order to make our box descriptor rotationally invariant, we oriented the windows such that the dominant gradient direction was aligend with the axis of each Gaussian blurred 40x40 window (with $\sigma = 4.0$). The dominant gradient was found by bucketing each pixel's orientation into ten 36 degree bucket. Each entry into the bucket was  was weighted by the gaussian coefficient based on each pixel's distance to the central interest point and the magnitude of each pixel's gradient. The weighted average of all the point orientations that were placed into the largest bucket was used to then calculate the overall weighted orientation of the descriptor. We also included the weighted orientation of buckets that were local maximas (taking the buckets that were at least $0.8$ times largest peak). This technique worked very well in identifying rotational copy-move as seen in Figure 3.
 
-For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the 16 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize.
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/without_rotation.jpg}
+  \caption{Without oriented box descriptors}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/with_rotation.jpg}
+  \caption{With oriented box descriptors}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{The figure shows how copy-move detection is dramatically improved when orientation is taken into account for the descriptors.}
+\label{fig:test}
+\end{figure}
+
+For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the sixteen 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize.
 
 \subsection*{Matching}
 After we have descriptors, we use the outlier rejection with nearest neighbor, heavily adapting the code from Efros et al.  Specifically, use a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [?]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 

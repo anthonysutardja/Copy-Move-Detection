@@ -7,7 +7,7 @@
 IMG_NAME = 'tree';
 
 % IMAGE_PATH = strcat(strcat('./p_images/', IMG_NAME), '/modified.png');
-IMAGE_PATH = './images/threehundred_copy.png';
+IMAGE_PATH = './images/cattle_copy.png';
 MASK_PATH = strcat(strcat('./p_images/', IMG_NAME), '/mask.png');
 
 start_time = cputime;
@@ -57,7 +57,7 @@ end
 
 % Show filtered interest points
 figure(3), imagesc(rgb2gray(im)); colormap(gray);
-hold on; plot(interest_points(:,2),interest_points(:,1),'r.'); hold off;
+hold on; plot(interest_points(:,2),interest_points(:,1),'ro'); hold off;
 %%
 % Auto rotate
 if ADD_ORIENTATION
