@@ -19,11 +19,11 @@ DESCRIPTOR_HOG = 5;   % to be implemented
 
 
 % Options
-ENABLE_ANMS = true;       % Adaptive non-maximal supression
-ENABLE_HIGH_POINTS = false;
+ENABLE_ANMS = false;       % Adaptive non-maximal supression
+ENABLE_HIGH_POINTS = true;
 ENABLE_RANSAC = true;     % RANSAC to find transformation estimation
 LOOK_FOR_MULTIPLE = false; % Look for multiple transformations in RANSAC 
-ADD_ORIENTATION = false;   % Rotation invariance
+ADD_ORIENTATION = true;   % Rotation invariance
 
 DESCRIPTOR = DESCRIPTOR_BOX;
 

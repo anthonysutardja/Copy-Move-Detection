@@ -161,12 +161,18 @@ Our method draws inspiration from a technique for stitching photos into into a p
 To get interest points, we found the Harris corners, or points that have a high gradient in both the x and y direction within a 3x3 window [?]. We then use one of two methods to select a subset of the Harris corners: Adaptive Non-Maximal Suppression (ANMS) or gradient-based sorting. In ANMS, ... . In gradient-based sorting, we take the Harris corners that have the highest gradient, regardless of their distance to other points. 
 
 \subsection*{Descriptors}
-We experimented with two different descriptors, the box descriptor and SIFT (scale invariant feature transform). For the box descriptor, ...
+We experimented with two different descriptors, the box descriptor and SIFT (scale invariant feature transform).
 
-For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the 16 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize. 
+For the box descriptor, we first implemented a naive box descriptor that did not take orientation into account. The box descriptor is created by sampling a 40 x 40 window that is Gaussian blurred (AT SOME SIGMA HERE) and then downsampled to an 8 x 8 window, which is subsequently rescaled such that the features are zero mean unit variance. This descriptor worked well in identifying strictly translational copy move instances, but was a poor descriptor for rotated copy move instances.
+
+In order to make our box descriptor rotationally invariant, we found the most likely orientations that a image may contain. The orientations of an interest point was found by bucketing each pixel in a 40 x 40 window by local orientation.
+
+For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the 16 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize.
 
 \subsection*{Matching}
-For matching, 
+After we have descriptors, we use the 
+
+Want to reduce the number of potential matches (filtering)
 
 \subsection*{Estimated Transformations}
 We use RANSAC.
