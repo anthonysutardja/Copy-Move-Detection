@@ -17,6 +17,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{stfloats}
 % The preamble here sets up a lot of new/revised commands and
 % environments.  It's annoying, but please do *not* try to strip these
 % out into a separate .sty file (which could lead to the loss of some
@@ -239,12 +240,12 @@ However, RANSAC has a single inlier set and therefore does not scale well to mul
 
 We benchmark our results on two metrics: number of points that were correctly matched, and time in seconds for completion. Additionally, we evaluate our results empirically and provide some examples that worked well and others that worked less well. Our numeric metrics are displayed in Table 1. 
 
-\begin{table}[t]
-\caption{Evaluation Metrics for Image: Egyptian Copy (BR = Box Rotated)}
+\begin{table}[bp]
+\caption{Evaluation Metrics for image Egyptian in Figure 4. The table shows the running time as well as the number of matched points for each method on the egyptian copy image. We see that the the unoriented box (B) and SIFT descriptors are much faster than the rotationally invariant box descriptor (BR), while achieving roughly the same performance. Using ANMS against corner-based sorting (Sort) resulted in lower runtimes primarily because corner-based sorting captured many more interest points in order to achieve detection.}
 \label{image}
 \begin{center}
 \begin{tabular}{l|llllll}
-\multicolumn{1}{l}{} & \multicolumn{1}{l}{\bf Box, ANMS} & \multicolumn{1}{l}{\bf Box, High} & \multicolumn{1}{l}{\bf BR, ANMS} & \multicolumn{1}{l}{\bf BR, High} & \multicolumn{1}{l}{\bf SIFT, ANMS} & \multicolumn{1}{l}{\bf SIFT, High}
+\multicolumn{1}{l}{} & \multicolumn{1}{l}{\bf B, ANMS} & \multicolumn{1}{l}{\bf B, Sort} & \multicolumn{1}{l}{\bf BR, ANMS} & \multicolumn{1}{l}{\bf BR, Sort} & \multicolumn{1}{l}{\bf SIFT, ANMS} & \multicolumn{1}{l}{\bf SIFT, Sort}
 \\ \hline \\
 {\bf \# Points} & 40 & 93 & 41 & 96 & 15 & 44 \\
 {\bf Time (s)} & 14.67 & 18.87 & 115.56 & 307.41 & 14.31 & 16.64 \\
@@ -281,6 +282,7 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \caption{Figure 4(a) and 4(b) shows the original and the modified image. Figure 4(c) and 4(d) show that our algorithm finds no copy move for the original image, but a copy move for the modified image.}
 \label{fig:test}
 \end{figure}
+
 
 \begin{figure}
 \centering
