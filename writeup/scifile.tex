@@ -170,12 +170,12 @@ In order to make our box descriptor rotationally invariant, we oriented the imag
 For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the 16 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize.
 
 \subsection*{Matching}
-After we have descriptors, we use the 
-
-Want to reduce the number of potential matches (filtering)
+After we have descriptors, we use the outlier rejection with nearest neighbor, heavily adapting the code from Efros et al.  Specifically, use a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [?]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 
 
 \subsection*{Estimated Transformations}
-We use RANSAC.
+Matching provides us with many correspondence points that have similar features, and we now use RANSAC to find the best set of matches that correspond to a copy move. RANSAC is an iterative method that repeatedly selects 4 points and computes the sum of squared differences (SSD) of each set of corresponding points [?]. Then, it keeps the set of inliers, where the SSD is less than some epsilon values. We run this for 8000 iterations. 
+
+However, RANSAC has a single inlier set and therefore does not scale well to multiple translations. We derive a new method, multi-RANSAC (mRANSAC) that solves this issue. 
 
 \section*{Results}
 
@@ -208,6 +208,7 @@ We would like thank Alyosha Efros for teaching and inspiration, as well as the i
 \item B. Shivakumar et al. {\it Automated Forensic Method for Copy-Move Forgery Detection based on Harris Interest Points and SIFT Descriptors}. IJCA, August 2011. 
 \item {\it Image Manipulation Dataset}. http://www5.cs.fau.de/research/data/image-manipulation. 
 \item J. Fridrich, D. Soukal and J. Lukas. {\it Detection of Copy-Move Forgery in Digital Images with}. Proc. of DFRWS 2003, Cleveland, OH, USA, August 5-8 2003
+\item M. A. Fischler, R. C. Bolles. Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography. Comm. of the ACM, Vol 24, pp 381-395, 1981. 
 \item M. Brown and D. Lowe. {\it Automatic Panoramic Image Stitching using Invariant Features.} International Journal of Computer Vision. 74(1), pages 59-73, 2007.
 \item M. Brown, R. Szeliski and S. Winder. {\it Multi-Image Matching using Multi-Scale Oriented Patches}. International Conference on Computer Vision and Pattern Recognition (CVPR2005) pp. 510-517.
 \item S. Pittala. {\it Copy Move Forgery Detection using HOG Descriptor}.
