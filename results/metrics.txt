@@ -1,1 +1,14 @@
 File name, # key points, frac key points, time in seconds
+
+tree/sift_anms.jpg, 14, 49.37
+tree/sift_high.jpg, 55, 63.00
+kore/sift_anms.jpg, 67, 60.07
+kore/sift_high.jpg, 234, 74.44
+extension/sift_anms.jpg, 77, 53.36
+extension/sift_high.jpg, 253, 74.14
+egyptian/sift_anms.jpg, 15, 58.47
+egyptian/sift_high.jpg, 44, 68.02
+cattle/sift_anms.jpg, 2, 58.79
+cattle/sift_high.jpg, 4, 68.50
+anthony_rotated/sift_anms.jpg, 2, 48.57
+anthony_rotated/sift_high.jpg, 0, 65.08
