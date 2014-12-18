@@ -252,6 +252,66 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \end{center}
 \end{table}
 
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/egyptian.png}
+  \caption{Original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/egyptian_mod.png}
+  \caption{Modified image}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/egyptian_none.jpg}
+  \caption{No copy move detection}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/egyptian_result.jpg}
+  \caption{Copy move detection}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Figure 4(a) and 4(b) shows the original and the modified image. Figure 4(c) and 4(d) show that our algorithm finds no copy move for the original image, but a copy move for the modified image.}
+\label{fig:test}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/cattle.png}
+  \caption{Original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/cattle_mod.jpg}
+  \caption{Copy move detection}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/kore.png}
+  \caption{Original Image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/kore_mod.jpg}
+  \caption{Copy move detection}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Figure 5(a) and 5(b) shows the matched points for the cattle image. Our algorithm is able to find these points despite the lack of edges on the bird and the small rotations. Figure 5(c) and 5(d) shows the matched points for the kore image. Our algorithm is able to find multiple sets of copy move due to mRANSAC.}
+\label{fig:test}
+\end{figure}
+
 \section*{Discussion and Future Work}
 
 One area of future work include detecting scaled copy move detection. Currently SIFT is not sufficient for detecting copy move, and we propose a method to solve this problem: repeatedly downsize an image and run feature matching. However, this tends to be less common in copy move examples, as objects can appear out of place with too much scaling and are therefore more easily detected by the human eye. Another, albeit much more difficult, problem is to detect points that were warped with some homography. One potential solution to solving these problems is to instead form interest points in the frequency domain, a method that we hope will lead to uncover more underlying structure of an image and portions of the image. 
