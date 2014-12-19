@@ -7,7 +7,7 @@
 IMG_NAME = 'tree';
 
 % IMAGE_PATH = strcat(strcat('./p_images/', IMG_NAME), '/modified.png');
-IMAGE_PATH = './images/cattle_copy.png';
+IMAGE_PATH = './images/stone.tif';
 MASK_PATH = strcat(strcat('./p_images/', IMG_NAME), '/mask.png');
 
 start_time = cputime;
@@ -48,7 +48,7 @@ if ENABLE_ANMS
     interest_points = anms(interest_points_original, 3000, 0.9); % before was 0.9
 elseif ENABLE_HIGH_POINTS
     disp('Filtering by highest corners..');
-    interest_points = highest_corners(interest_points_original, 8000);
+    interest_points = highest_corners(interest_points_original, 1000);
 else
     interest_points = interest_points_original;
 end

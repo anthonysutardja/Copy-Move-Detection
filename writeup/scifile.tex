@@ -195,7 +195,7 @@ The two different interest point filtering methods both have significantly diffe
 \label{fig:test}
 \end{figure}
 
-In corner-based sorting, we take the Harris corners that have the highest Harris corner value, regardless of their distance to other points. Taking the top $N$ interest points from corner-based sorting helps capture more localized details. This is especially important with images that have extremely small manipulations, since copy-move transformation estimation requires at least a few points in order to come up with an accurate transformation.
+In corner-based sorting, we take the Harris corners that have the highest values, regardless of their distance to other points. Taking the top $N$ interest points from corner-based sorting helps capture more localized details. This is especially important with images that have extremely small manipulations, since copy-move transformation estimation requires at least a few points in order to come up with an accurate transformation.
 
 In ANMS, we take Harris corners that are high in value and spread relative. This methodology is directly taken from the MOPS paper; please see the paper for more details on its implementation [6]. Using ANMS helps detection of a broader region of copy-move instances since the collection of interest points are more spread out. This is useful in capturing the full context of the copy-moved manipulation.
 
@@ -204,7 +204,7 @@ We experimented with two different descriptors, the box descriptor and scale inv
 
 For the box descriptor, we first implemented a naive box descriptor that did not take orientation into account. The box descriptor is created by sampling a 40x40 window that is Gaussian blurred (at $\sigma = 1.0$) and then downsampled to an 8 x 8 window, which is subsequently rescaled such that the features are zero mean unit variance. This descriptor worked well in identifying strictly translational copy move instances, but was a poor descriptor for rotated copy-move instances.
 
-In order to make our box descriptor rotationally invariant, we oriented the windows such that the dominant gradient direction was aligned with the axis of each Gaussian blurred 40x40 window (with $\sigma = 4.0$). The dominant gradient was found by bucketing each pixel's orientation into ten 36 degree buckets. Each entry into the bucket was  was weighted by the gaussian coefficient based on each pixel's distance to the central interest point and the magnitude of each pixel's gradient. The weighted average of all the point orientations that were placed into the largest bucket was used to then calculate the overall weighted orientation of the descriptor. We also included the weighted orientation of buckets that were local maximas (taking the buckets that were at least $0.8$ times largest peak). This technique worked very well in identifying rotational copy-move as seen in Figure 3.
+In order to make our box descriptor rotationally invariant, we oriented the windows such that the dominant gradient direction was aligned with the axis of each Gaussian blurred 40x40 window (with $\sigma = 4.0$). The dominant gradient was found by bucketing each pixel's orientation into ten 36 degree buckets. Each entry into the bucket was  weighted by the gaussian coefficient based on each pixel's distance to the central interest point and the magnitude of each pixel's gradient. The weighted average of all the point orientations that were placed into the largest bucket was used to then calculate the overall weighted orientation of the descriptor. We also included the weighted orientation of buckets that were local maximas (taking the buckets that were at least $0.8$ times largest peak). This technique worked very well in identifying rotational copy-move as seen in Figure 3.
 
 \begin{figure}
 \centering
@@ -224,21 +224,21 @@ In order to make our box descriptor rotationally invariant, we oriented the wind
 \label{fig:test}
 \end{figure}
 
-For SIFT, for each interest point, we take a 16x16 window around that point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the sixteen 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize [1].
+In SIFT, for each interest point, we take a 16x16 window around the interes point, splitting it into 4x4 windows. For each 4x4 window, we calculate the orientation and magnitude of the gradient at that point and bucket them into 8 buckets. We do this for each of the sixteen 4x4 windows for a total of 128 feature descriptors. Then, we subtract the magnitude and orientation of the interest point and normalize. To avoid any values that are significantly higher than the rest, we threshold the normalized vector at 0.2 and renormalize [1].
 
 \subsection*{Matching}
 After we have descriptors, we use the outlier rejection with nearest neighbor. Specifically, using a basic distance metric, Euclidean distance (our feature vector/descriptor is relatively low dimensional), to find the first and second nearest neighbor for each descriptor, and then we take the ratio of the distance. If that ratio is less than a threshold value, which we set to be 0.4, which the optimal value for panorama stitching [6]. In our experiments, we also tried to vary the threshold value. A smaller threshold value finds stronger matches, and subsequently makes running the estimated transformations faster. However, it can miss out on points. A large threshold will find more matches, but increases the running time of finding the set of estimated transformations. With our application, 0.4 was a good tradeoff between speed and breadth of points. A small detail worth mentioning is that for each descriptor point, we had to set the distance to itself to be infinity, otherwise it would find itself to be the nearest neighbor. 
 
-To improve the speed of the subsequent step, we also do an additional step of filtering. We found that many points that were returned by the matching were points that were a few pixels away from each other, since the texture doesn't change too much. However, it is difficult by hand to copy move anything less than 10 pixels (or even 15-20 pixels). Therefore, we remove matches that are 3 pixels or less apart. 
+To improve the speed of the subsequent step, we also do an additional step of filtering. We found that many points that were returned by the matching were points that were a few pixels away from each other, since the texture doesn't change too much. However, it is difficult by hand to copy-move anything less than 10 pixels (or even 15-20 pixels). Therefore, we remove matches that are 3 pixels or less apart. 
 
 \subsection*{Estimated Transformations}
-Matching provides us with many correspondence points that have similar features, and we now use RANSAC to find the best set of matches that correspond to a copy move. RANSAC is an iterative method that repeatedly selects 4 points and computes the sum of squared differences (SSD) of each set of corresponding points [?]. Then, it keeps the set of inliers, where the SSD is less than some epsilon values. We run this for 8000 iterations. 
+Matching provides us with many correspondence points that have similar features, and we now use RANSAC to find the best set of matches that correspond to a copy move. RANSAC is an iterative method that repeatedly selects 4 points and computes the sum of squared differences (SSD) of each set of corresponding points [6]. Then, it keeps the set of inliers, where the SSD is less than some epsilon values. We run this for 8000 iterations. 
 
 However, RANSAC has a single inlier set and therefore does not scale well to multiple translations. We derive a new method, multi-RANSAC (mRANSAC) that solves this issue. Multi-RANSAC performs exactly the same as RANSAC, except that it saves the top $k$ inlier sets (we used $k = 6$). This essentially attempts to capture multiple transformations, which enables us to identify more than one specific instance of copy-move within an image. In this modified version of RANSAC, we also only kept inlier sets that contained a minimum number of points that was set by a threshold.
 
 \section*{Results}
 
-We benchmark our results on two metrics: number of points that were correctly matched, and time in seconds for completion. Additionally, we evaluate our results empirically and provide some examples that worked well and others that worked less well. Our numeric metrics are displayed in Table 1. 
+We benchmark our results on two metrics: number of points that were correctly matched, and time in seconds for completion. Additionally, we evaluate our results empirically and provide some examples that worked well and others that worked less well. Our numeric metrics are displayed in Table 1. More examples of successful detections are listed in the appendix.
 
 \begin{table}[bp]
 \caption{Evaluation Metrics for image Egyptian in Figure 4. The table shows the running time as well as the number of matched points for each method on the egyptian copy image. We see that the unoriented box (B) and SIFT descriptors are much faster than the rotationally invariant box descriptor (BR), while achieving roughly the same performance. Using ANMS against corner-based sorting (Sort) resulted in lower runtimes primarily because corner-based sorting captured many more interest points in order to achieve detection.}
@@ -315,7 +315,7 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \end{figure}
 
 \section*{Discussion and Future Work}
-Overall, we are satisfied with our copy-move detection algorithm as it has correctly classified most instances in our dataset. Our results outperform most other algorithms in detection time and accuracy. For the majority of the algorithms that we compared our method to, our algorithm was able to identify more copy-move regions with less false positives (we had none). For the single algorithm that performed better in accuracy than our method [1], our method was able to identify a sparser copy-move region in far less time (45 minutes vs 15 seconds).
+Overall, we are satisfied with our copy-move detection algorithm as it has correctly classified most instances in our dataset. Our results outperform most other algorithms in detection time and accuracy. For the majority of the algorithms that we compared our method to, our algorithm was able to identify more copy-move regions with less false positives (we had no false positives). For the single algorithm that performed better in accuracy than our method [1], our method was able to identify a sparser copy-move region in far less time (45 minutes vs 15 seconds).
 
 There are two key insights from our work on copy-move detection. First, there is a trade-off between speed and accuracy. More interest points can lead to more accurate and complete detection, but at the expense of time. Using a sparse set of interest points decreases running time significantly, but forces us to choose a strategy in selecting the optimal gsparse set of interest points. This leads to our second insight: the two different strategies that we tried have their different strengths. Filtering by ANMS enables our algorithm to capture the overall context of the copy-moved region, while filtering by corner-based sorting enables our algorithm to capture smaller copy-moved patches. Using a combination of both these filtering techniques helps in identifying copy-move forgeries.
 
@@ -381,7 +381,7 @@ We would like thank Alyosha Efros for teaching and inspiration, as well as the i
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{./gfx/falcon.png}
+  \includegraphics[width=.8\linewidth]{./gfx/knight.png}
 \end{subfigure}
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -391,6 +391,25 @@ We would like thank Alyosha Efros for teaching and inspiration, as well as the i
   \centering
   \includegraphics[width=.8\linewidth]{../results/extension/box-regular_high.jpg}
 \end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/falcon.png}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/stones.png}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/three_hundred.png}
+\end{subfigure}
+\begin{subfigure}{.493\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/water.png}
+\end{subfigure}
+
+
+\caption{The figures above show successful examples of copy-move detection.}
 \label{fig:test}
 \end{figure}
 
