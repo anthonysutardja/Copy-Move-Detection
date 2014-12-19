@@ -289,7 +289,7 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=.8\linewidth]{./gfx/cattle.png}
-  \caption{Original image}
+  \caption{Modified image}
   \label{fig:sub1}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
@@ -301,7 +301,7 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=.8\linewidth]{./gfx/kore.png}
-  \caption{Original Image}
+  \caption{Modified Image}
   \label{fig:sub1}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
@@ -315,12 +315,15 @@ We benchmark our results on two metrics: number of points that were correctly ma
 \end{figure}
 
 \section*{Discussion and Future Work}
+Overall, we are satisfied with our copy-move detection algorithm as it has correctly classified most instances in our dataset. Our results outperform most other algorithms in detection time and accuracy. For the majority of the algorithms that we compared our method to, our algorithm was able to identify more copy-move regions with less false positives (we had none). For the single algorithm that performed better in accuracy than our method [1], our method was able to identify a sparser copy-move region in far less time (45 minutes vs 15 seconds).
 
-One area of future work include detecting scaled copy move detection. Currently SIFT is not sufficient for detecting copy move, and we propose a method to solve this problem: repeatedly downsize an image and run feature matching. However, this tends to be less common in copy move examples, as objects can appear out of place with too much scaling and are therefore more easily detected by the human eye. Another, albeit much more difficult, problem is to detect points that were warped with some homography. One potential solution to solving these problems is to instead form interest points in the frequency domain, a method that we hope will lead to uncover more underlying structure of an image and portions of the image. 
+There are two key insights from our work on copy-move detection. First, there is a trade-off between speed and accuracy. More interest points can lead to more accurate and complete detection, but at the cost of a lot of time. Using a sparse set of interest points decreases running time significantly, but forces us to choose a strategy in selecting the sparse set of interest points. This leads to our second insight: the two different strategies that we tried have their different strengths. Filtering by ANMS enables our algorithm to capture the overall context of the copy-moved region, while filtering by corner-based sorting enables our algorithm to capture smaller copy-moved patches. Using a combination of both these filtering techniques helps in identifying copy-move forgeries.
+
+One area of future work includes detecting scaled copy move detection. Currently SIFT is not sufficient for detecting copy move, and we propose a method to solve this problem: repeatedly downsize an image and run feature matching. However, this tends to be less common in copy move examples, as objects can appear out of place with too much scaling and are therefore more easily detected by the human eye. Another, albeit much more difficult, problem is to detect points that were warped with some homography. One potential solution to solving these problems is to instead form interest points in the frequency domain, a method that we hope will lead to uncover more underlying structure of an image and portions of the image. 
 
 Another area of future work is to formalize mRANSAC and make it more robust to different images and arbitrary number clusters (it's currently only able to capture a pre-defined number of transformations). We propose using some variant of the Hierarchical Dirichlet Process (HDP) to automatically find the clusters and be able to integrate it into the RANSAC algorithm. Our currently methodology is able to find points of the copy move, although it often just finds a portion of the copy move. The criterion of the inlier set could be experimented with in mRANSAC to be able to detect a wider spread of the copy move.
 
-Last, we propose two experiments for future work using our current framework to improve accuracy. The first is finding the optimal window size for each of the descriptors and developing a method of determining what window size to on which images. It is unclear whether using less points will increase or decrease the accuracy of the matching. Increase points will allow for more matches, but at the same time it will add more "noise". A formal assessment of this can determine the optimal number of points used. 
+Last, we propose two experiments for future work using our current framework to improve accuracy. The first is finding the optimal window size for each of the descriptors and developing a method of determining what window size to on which images. It is unclear whether using less points will increase or decrease the accuracy of the matching. Increasing points will allow for more matches, but at the same time it will add more ``noise". A formal assessment of this can determine the optimal number of points used. 
 
 \subsection*{Acknowledgements}
 
@@ -370,5 +373,25 @@ We would like thank Alyosha Efros for teaching and inspiration, as well as the i
 \end{center}
 \end{table}.
 
-\end{document}
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/success_sailing.png}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{./gfx/falcon.png}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../results/tree/sift_anms.jpg}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../results/extension/box-regular_high.jpg}
+\end{subfigure}
+\label{fig:test}
+\end{figure}
 
+\end{document}
